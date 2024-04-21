@@ -7,8 +7,6 @@ import com.katali.bookstorecatalog.domain.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/products")
 class ProductController {
@@ -25,8 +23,9 @@ class ProductController {
     }
 
     @GetMapping("/{code}")
-    ResponseEntity<Product> getProductByCode(@PathVariable String code){
-        return productService.getProductByCode(code)
+    ResponseEntity<Product> getProductByCode(@PathVariable String code) {
+        return productService
+                .getProductByCode(code)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> ProductNotFoundException.forCode(code));
     }

@@ -11,8 +11,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest(
         properties = {
-                "spring.test.database.replace=none",
-                "spring.datasource.url=jdbc:tc:postgresql:16-alpine:///db",
+            "spring.test.database.replace=none",
+            "spring.datasource.url=jdbc:tc:postgresql:16-alpine:///db",
         })
 // @Import(ContainersConfig.class)
 @Sql("/test-data.sql")
