@@ -16,6 +16,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<springdoc-openapi.version>2.5.0</springdoc-openapi.version>
+		<dockerImageName>katali/bookstore-${project.artifactId}</dockerImageName>
 		<spotless.version>${spotless-maven-plugin.version}</spotless.version>
 		<spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
 	</properties>
@@ -98,6 +99,12 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<name>${dockerImageName}</name>
+						<builder>dashaun/builder:tiny</builder>
+					</image>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
