@@ -15,8 +15,6 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final URI ISE_FOUND_TYPE = URI.create("https://api.bookstore.com/errors/server-error");
     private static final String SERVICE_NAME = "catalog-service";
 
-    private static final String DENEME = "katali";
-
     @ExceptionHandler(Exception.class)
     ProblemDetail handleUnhandledException(Exception e) {
         ProblemDetail problemDetail =
