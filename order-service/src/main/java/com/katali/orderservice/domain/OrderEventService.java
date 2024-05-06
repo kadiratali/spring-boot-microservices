@@ -2,8 +2,7 @@ package com.katali.orderservice.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.katali.orderservice.domain.models.OrderCreatedEvent;
-import com.katali.orderservice.domain.models.OrderEventType;
+import com.katali.orderservice.domain.models.*;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import org.slf4j.Logger;
@@ -39,6 +38,36 @@ public class OrderEventService {
         this.orderEventRepository.save(orderEvent);
     }
 
+    void save(OrderDeliveredEvent event) {
+        OrderEventEntity orderEvent = new OrderEventEntity();
+        orderEvent.setEventId(event.eventId());
+        orderEvent.setEventType(OrderEventType.ORDER_DELIVERED);
+        orderEvent.setOrderNumber(event.orderNumber());
+        orderEvent.setCreatedAt(event.createdAt());
+        orderEvent.setPayload(toJsonPayload(event));
+        this.orderEventRepository.save(orderEvent);
+    }
+
+    void save(OrderCancelledEvent event) {
+        OrderEventEntity orderEvent = new OrderEventEntity();
+        orderEvent.setEventId(event.eventId());
+        orderEvent.setEventType(OrderEventType.ORDER_CANCELLED);
+        orderEvent.setOrderNumber(event.orderNumber());
+        orderEvent.setCreatedAt(event.createdAt());
+        orderEvent.setPayload(toJsonPayload(event));
+        this.orderEventRepository.save(orderEvent);
+    }
+
+    void save(OrderErrorEvent event) {
+        OrderEventEntity orderEvent = new OrderEventEntity();
+        orderEvent.setEventId(event.eventId());
+        orderEvent.setEventType(OrderEventType.ORDER_PROCESSING_FAILED);
+        orderEvent.setOrderNumber(event.orderNumber());
+        orderEvent.setCreatedAt(event.createdAt());
+        orderEvent.setPayload(toJsonPayload(event));
+        this.orderEventRepository.save(orderEvent);
+    }
+
     public void publishOrderEvents() {
         Sort sort = Sort.by("createdAt").ascending();
         List<OrderEventEntity> events = orderEventRepository.findAll(sort);
@@ -56,6 +85,17 @@ public class OrderEventService {
                 OrderCreatedEvent orderCreatedEvent = fromJsonPayload(event.getPayload(), OrderCreatedEvent.class);
                 orderEventPublisher.publish(orderCreatedEvent);
                 break;
+            case ORDER_DELIVERED:
+                OrderDeliveredEvent orderDeliveredEvent =
+                        fromJsonPayload(event.getPayload(), OrderDeliveredEvent.class);
+                orderEventPublisher.publish(orderDeliveredEvent);
+            case ORDER_CANCELLED:
+                OrderCancelledEvent orderCancelledEvent =
+                        fromJsonPayload(event.getPayload(), OrderCancelledEvent.class);
+                orderEventPublisher.publish(orderCancelledEvent);
+            case ORDER_PROCESSING_FAILED:
+                OrderErrorEvent orderErrorEvent = fromJsonPayload(event.getPayload(), OrderErrorEvent.class);
+                orderEventPublisher.publish(orderErrorEvent);
             default:
                 log.warn("Uns");
         }
